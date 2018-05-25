@@ -2,7 +2,7 @@
 import argparse
 import random
 
-def generate_random_game_results():
+def generate_random_game_results(filename):
     """
     Generate a random game list with random score between 0 and 5 for each team.
     :return Write the list to file called game_results.txt
@@ -10,7 +10,7 @@ def generate_random_game_results():
     team_names = [
         'Tarantulas', 'Lions', 'FC Awesome', 'Snakes', 'Grouches', 'Rockets', 'Worriors'
     ]
-    file = open('game_results.txt', 'w')
+    file = open(filename, 'w')
     playlist = []
     for i in range(len(team_names)*2):
         team1 = random.choice(team_names)
@@ -141,6 +141,7 @@ def output_team_ranking(team_scores, output_file):
             file.write(f'{count}. {team}, {score} {unit}\n')
         count += len(teams)
     file.close()
+    print(f'Team ranks are saved in {output_file}.')
 
 
 def main():
