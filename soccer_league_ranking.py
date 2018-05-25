@@ -1,15 +1,34 @@
 #!/usr/bin/venv python
 import argparse
-import operator
+import random
+
+def generate_random_game_results():
+    """
+    Generate a random game list with random score between 0 and 5 for each team.
+    :return Write the list to file called game_results.txt
+    """
+    team_names = [
+        'Tarantulas', 'Lions', 'FC Awesome', 'Snakes', 'Grouches', 'Rockets', 'Worriors'
+    ]
+    file = open('game_results.txt', 'w')
+    playlist = []
+    for i in range(len(team_names)*2):
+        team1 = random.choice(team_names)
+        team2 = random.choice(team_names)
+
+        while team2 == team1:
+            team2 = random.choice(team_names)
+        score1 = random.randint(0, 5)
+        score2 = random.randint(0, 5)
+        if f'{team1}:{team2}' not in playlist:
+            playlist.append(f'{team1}:{team2}')
+            file.write(f'{team1} {score1}, {team2} {score2}\n')
+    file.close()
 
 
 def create_parsed_args():
     """
-    --single: Find one given movie's rating
-    --path: Find all movies' rating in the given path
-    --poster: Find movie rating with poster path
-    --preview: Find movie rating with preview link
-    --verify: Verify the found movie's id at www.themoviedb.org
+    Get options from command line input.
     """
 
     parser = argparse.ArgumentParser(
@@ -34,9 +53,9 @@ def create_parsed_args():
 
 def read_game_results(input_file):
     """
-
+    This function reads game results from the given input file.
     :param input_file:
-    :return: A list of dictionary and each dict stores team name and its goals.
+    :return: A list of dictionaries which store team name and its goals.
     """
     file = open(input_file, 'r')
     results = []
@@ -54,7 +73,7 @@ def read_game_results(input_file):
 
 def update_team_score(team_scores, team_name, score):
     """
-
+    Added team and its score to the team_scores list.
     :param team_scores:
     :param team_name:
     :param score:
@@ -67,9 +86,10 @@ def update_team_score(team_scores, team_name, score):
             {team_name: score}
         )
 
+
 def calculate_team_scores(game_results):
     """
-
+    Base on Win, Tie and Loose rules work out score for each team.
     :param game_results:
     :return:
     """
@@ -78,12 +98,15 @@ def calculate_team_scores(game_results):
         team_list = list(game.keys())
         team_1 = team_list[0]
         team_2 = team_list[1]
+        # Win = 3
         if game[team_1] > game[team_2]:
             update_team_score(team_scores, team_1, 3)
             update_team_score(team_scores, team_2, 0)
+        # Tie = 1
         elif game[team_1] == game[team_2]:
             update_team_score(team_scores, team_1, 1)
             update_team_score(team_scores, team_2, 1)
+        # Loose = 0
         else:
             update_team_score(team_scores, team_1, 0)
             update_team_score(team_scores, team_2, 3)
@@ -92,29 +115,38 @@ def calculate_team_scores(game_results):
 
 def output_team_ranking(team_scores, output_file):
     """
-
+    This function sort teams by scores and output them to a given file.
     :param team_scores:
+    :param output_file:
     :return:
     """
+    randed_teams = {}
+    for team_name, scores in team_scores.items():
+        if scores in randed_teams:
+            randed_teams[scores].append(team_name)
+        else:
+            randed_teams.update(
+                {scores: [team_name]}
+            )
+    randed_scores = list(randed_teams.keys())
+    randed_scores =  sorted(randed_scores, reverse=True)
 
-    team_scores_sorted = dict(
-        sorted(team_scores.items(), key=(operator.itemgetter(1)), reverse=True)
-    )
     file = open(output_file, 'w')
-    count = 0
-    for team_name in list(team_scores_sorted.keys()):
-        count += 1
-        score = team_scores_sorted[team_name]
+    count = 1
+    for score in randed_scores:
         unit = 'pt' if score <=1 else 'pts'
-        file.write(f'{count}. {team_name}, {score} {unit}\n')
+        teams = randed_teams[score]
+        for team in sorted(teams):
+            # print(f'{count}. {team}, {score} {unit}\n')
+            file.write(f'{count}. {team}, {score} {unit}\n')
+        count += len(teams)
     file.close()
 
 
-def soccer_league_ranking(input_args):
+def main():
     """
-    :param game_result:
-    :return:
     """
+    input_args = create_parsed_args()
     input_file = input_args.input
     output_file = input_args.output
     game_results = read_game_results(input_file)
@@ -123,6 +155,5 @@ def soccer_league_ranking(input_args):
 
 
 if __name__ == '__main__':
-
-    parsed_args = create_parsed_args()
-    soccer_league_ranking(parsed_args)
+    # generate_random_game_results()
+    main()
