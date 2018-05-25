@@ -45,8 +45,13 @@ Lions 4, Grouches 0
     $ cd SoccerLeagueRanking
     $ python3.6 -m venv venv
     ```
+3. Activate virtual environment
+    
+    ```bash
+    $ source venv/bin/activate
+    ```
 
-3. Install Dependencies
+4. Install Dependencies
 
     ```bash
     $ pip install -r requirements.txt
@@ -67,10 +72,6 @@ Lions 4, Grouches 0
 
 Once the virtual environment is created in the application directory, 
 it must be activated before the application is able to run.
-
-```bash
-$ source venv/bin/activate
-```
 
 There is a input file called `sample_input.txt` in the application directory.
 
